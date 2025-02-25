@@ -6,7 +6,7 @@ use function Laravel\Prompts\select;
 use function Laravel\Prompts\suggest;
 use function Laravel\Prompts\text;
 
-class TakeInputService
+class InputCollectorService
 {
     protected array $difficultyOptions = ['Beginner', 'Intermediate', 'Advance'];
 

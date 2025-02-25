@@ -40,7 +40,8 @@ class ChatGPT implements AiModel
             'content' => $response,
         ];
 
-        dump($this->messages);
+        // dump($this->messages);
+        // dump($response);
 
         return $response;
     }

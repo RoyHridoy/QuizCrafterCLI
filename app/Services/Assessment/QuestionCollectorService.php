@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\Question;
+namespace App\Services\Assessment;
 
 use App\AI\Contract\AiModel;
 
-class GenerateQuestion
+class QuestionCollectorService
 {
     protected string $difficultyLevel = 'beginner';
 
@@ -12,13 +12,24 @@ class GenerateQuestion
 
     protected int $numOfQuestions = 10;
 
-    protected string $systemMessage = 'You are an expert tutor to take exam.';
-
-    protected string $questionPrompt = 'Provide 10 mcq question with 4 options and a correct answer where topic is laravel difficulty medium and provide response as question in first array index then 4 questions in 4 array index and answer is another index';
+    protected string $systemMessage = 'You are an expert tutor for taking exam.';
 
     public function __construct(protected AiModel $aiModel)
     {
         //
+    }
+
+    private function generateQuestions(): string
+    {
+        return "Generate {$this->numOfQuestions} multiple-choice questions on the topic of {$this->topic} with {$this->difficultyLevel} difficulty. The output must be in the following JSON format for each question and always wrap the array ```json to ```:
+        [
+            {
+                \"index\": question_number,
+                \"question\": \"The question text here\",
+                \"options\": [\"Option A\", \"Option B\", \"Option C\", \"Option D\"],
+                \"answer\": correct_option_index (integer, starting from 0)
+            }
+        ]";
     }
 
     public function setDifficultyLevel(string $difficultyLevel): static
@@ -42,11 +53,11 @@ class GenerateQuestion
         return $this;
     }
 
-    public function getQuestions(): array
+    public function collectQuestions(): array
     {
         $content = $this->aiModel
             ->setSystemMessage($this->systemMessage)
-            ->send($this->questionPrompt);
+            ->send($this->generateQuestions());
 
         return $this->parseJson($content);
     }
@@ -57,6 +68,6 @@ class GenerateQuestion
         $end = strpos($jsonContent, '```', $start);
         $jsonResponse = substr($jsonContent, $start, $end - $start);
 
-        return json_decode($jsonResponse);
+        return json_decode($jsonResponse, true) ?? [];
     }
 }

@@ -3,8 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\Assessment\TakeInputService;
-use App\Services\Question\GenerateQuestion;
+use App\Services\Assessment\InputCollectorService;
+use App\Services\Assessment\QuestionCollectorService;
+use App\Services\Assessment\ExamEvaluatorService;
 use App\AI\ChatGPT;
 
 use function Laravel\Prompts\{alert,info, note, outro, select, text, suggest, spin};
@@ -15,7 +16,7 @@ class GiveAssessment extends Command
 
     protected $description = 'Generate Questions for assessments on specific topic';
 
-    protected GenerateQuestion $generateQuestion;
+    protected QuestionCollectorService $questionCollectorService;
 
     protected string $topic = 'laravel';
 
@@ -24,12 +25,13 @@ class GiveAssessment extends Command
     protected int $numberOfQuestions = 10;
 
     public function __construct(
-        protected TakeInputService $takeInputService
+        protected InputCollectorService $inputCollectorService,
+        protected ExamEvaluatorService $examEvaluatorService
     ) {
 
         parent::__construct();
 
-        $this->generateQuestion = new GenerateQuestion(new ChatGPT());
+        $this->questionCollectorService = new QuestionCollectorService(new ChatGPT());
     }
 
     /**
@@ -37,47 +39,36 @@ class GiveAssessment extends Command
      */
     public function handle()
     {
-        [$this->topic, $this->difficultyLevel, $this->numberOfQuestions] = $this->takeInputService->getInputs();
+        [$this->topic, $this->difficultyLevel, $this->numberOfQuestions] = $this->inputCollectorService->getInputs();
 
         alert("Your Topic: {$this->topic}, Difficulty: {$this->difficultyLevel}, Total Question: {$this->numberOfQuestions}.");
 
         $questions = spin(fn () => $this->fetchQuestions(), 'Fetching Questions...');
 
+        [$userChoices, $marks] = $this->examEvaluatorService->evaluate($questions);
+        outro("Your marks: {$marks}");
+
+        $feedback = spin(fn () => $this->generateFeedback($userChoices), 'Generating Feedback...');
+
         /* TODO:
-            1) Take Exam and Calculate Result
-            2) Show spin to getting feedback
             2) Send Result to AI and get Feedback
             4) Display short feedback
         */
-        $totalMarks = 0;
-        $userChoices = [];
-
-        foreach ($questions as $question) {
-            outro($question->question);
-            $userChoice = select(label: 'Choose Correct Option', options: [...$question->options]);
-
-            $userChoices[] = $userChoice;
-
-            if ($userChoice === $question->answer) {
-                $totalMarks += 1;
-            }
-        }
-        outro("Your total marks: {$totalMarks}");
-
-        // TODO: Send gpt these answer with total marks and get a short feedback.
-        dump($userChoices);
+        info($feedback);
     }
 
-    private function fetchQuestions()
+    private function fetchQuestions(): array
+    {
+        return $this->questionCollectorService
+            ->setTopic($this->topic)
+            ->setDifficultyLevel($this->difficultyLevel)
+            ->setTotalQuestion($this->numberOfQuestions)
+            ->collectQuestions();
+    }
+
+    private function generateFeedback(array $userChoices)
     {
         sleep(2);
-
-        // return $this->generateQuestion
-        //     ->setTopic($this->topic)
-        //     ->setDifficultyLevel($this->difficultyLevel)
-        //     ->setTotalQuestion($this->numberOfQuestions)
-        //     ->getQuestions();
-
-        return json_decode(file_get_contents(__DIR__.'/../../../test-full.txt'));
+        return "Here is your feedback";
     }
 }
