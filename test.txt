@@ -1,110 +1,32 @@
-"""
-          Sure! Here are 10 multiple-choice questions (MCQs) on Laravel, each with 4 options and the correct answer specified.
-
-          ```json
-          [
-              {
-                  "question": "What is the purpose of the `.env` file in a Laravel application?",
-                  "options": [
-                      "To store the application environment variables",
-                      "To define database schemas",
-                      "To hold view templates",
-                      "To manage route definitions"
-                  ],
-                  "answer": "To store the application environment variables"
-              },
-              {
-                  "question": "Which command is used to generate a new controller in Laravel?",
-                  "options": [
-                      "php artisan make:controller",
-                      "php artisan generate:controller",
-                      "php artisan create:controller",
-                      "php artisan build:controller"
-                  ],
-                  "answer": "php artisan make:controller"
-              },
-              {
-                  "question": "What is the default session driver used by Laravel?",
-                  "options": [
-                      "file",
-                      "database",
-                      "cookie",
-                      "array"
-                  ],
-                  "answer": "file"
-              },
-              {
-                  "question": "In Laravel, which method is used to validate incoming request data?",
-                  "options": [
-                      "validateRequest()",
-                      "validateInput()",
-                      "validateData()",
-                      "validate()"
-                  ],
-                  "answer": "validate()"
-              },
-              {
-                  "question": "What command is used to run Laravel migrations?",
-                  "options": [
-                      "php artisan migrate:run",
-                      "php artisan migrate",
-                      "php artisan migrate:start",
-                      "php artisan migrate:up"
-                  ],
-                  "answer": "php artisan migrate"
-              },
-              {
-                  "question": "Which of the following is the template engine used in Laravel?",
-                  "options": [
-                      "Twig",
-                      "Blade",
-                      "Smarty",
-                      "Mustache"
-                  ],
-                  "answer": "Blade"
-              },
-              {
-                  "question": "How do you create a new model in Laravel?",
-                  "options": [
-                      "php artisan model:create",
-                      "php artisan make:model",
-                      "php artisan generate:model",
-                      "php artisan create:model"
-                  ],
-                  "answer": "php artisan make:model"
-              },
-              {
-                  "question": "What is the purpose of the `routes/web.php` file in Laravel?",
-                  "options": [
-                      "To define API routes",
-                      "To serve HTML responses",
-                      "To support WebSocket connections",
-                      "To manage database queries"
-                  ],
-                  "answer": "To serve HTML responses"
-              },
-              {
-                  "question": "In Laravel, what is Eloquent?",
-                  "options": [
-                      "A routing system",
-                      "An ORM (Object-Relational Mapping) system",
-                      "A middleware system",
-                      "A templating engine"
-                  ],
-                  "answer": "An ORM (Object-Relational Mapping) system"
-              },
-              {
-                  "question": "What command do you use to create a new Laravel project?",
-                  "options": [
-                      "composer create-project --prefer-dist laravel/laravel",
-                      "laravel new project-name",
-                      "php artisan new project-name",
-                      "composer new project-name"
-                  ],
-                  "answer": "composer create-project --prefer-dist laravel/laravel"
-              }
-          ]
-          ```
-
-          Feel free to use these questions for your exam preparation or any other purpose!
-          """
+[
+    {
+        "question": "What is the purpose of the `.env` file in a Laravel application?",
+        "options": [
+            "To store the application environment variables",
+            "To define database schemas",
+            "To hold view templates",
+            "To manage route definitions"
+        ],
+        "answer": "To store the application environment variables"
+    },
+    {
+        "question": "Which command is used to generate a new controller in Laravel?",
+        "options": [
+            "php artisan make:controller",
+            "php artisan generate:controller",
+            "php artisan create:controller",
+            "php artisan build:controller"
+        ],
+        "answer": "php artisan make:controller"
+    },
+    {
+        "question": "What is the default session driver used by Laravel?",
+        "options": [
+            "file",
+            "database",
+            "cookie",
+            "array"
+        ],
+        "answer": "file"
+    }
+]
