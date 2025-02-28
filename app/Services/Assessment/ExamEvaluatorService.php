@@ -24,9 +24,16 @@ class ExamEvaluatorService
                 $totalMarks += 1;
             }
         }
+
         return [
             $this->userChoices,
             $totalMarks,
         ];
+    }
+
+    public function getFeedback()
+    {
+        dump($this->userChoices);
+        // $this->generateFeedback();
     }
 }

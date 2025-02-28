@@ -2,13 +2,17 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use App\AI\ChatGPT;
+use App\Services\Assessment\DisplayFeedbackService;
+use App\Services\Assessment\ExamEvaluatorService;
+use App\Services\Assessment\FeedbackCollectorService;
 use App\Services\Assessment\InputCollectorService;
 use App\Services\Assessment\QuestionCollectorService;
-use App\Services\Assessment\ExamEvaluatorService;
-use App\AI\ChatGPT;
+use Illuminate\Console\Command;
 
-use function Laravel\Prompts\{alert,info, note, outro, select, text, suggest, spin};
+use function Laravel\Prompts\alert;
+use function Laravel\Prompts\outro;
+use function Laravel\Prompts\spin;
 
 class GiveAssessment extends Command
 {
@@ -18,6 +22,8 @@ class GiveAssessment extends Command
 
     protected QuestionCollectorService $questionCollectorService;
 
+    protected FeedbackCollectorService $feedbackCollectorService;
+
     protected string $topic = 'laravel';
 
     protected string $difficultyLevel = 'intermediate';
@@ -26,12 +32,14 @@ class GiveAssessment extends Command
 
     public function __construct(
         protected InputCollectorService $inputCollectorService,
-        protected ExamEvaluatorService $examEvaluatorService
+        protected ExamEvaluatorService $examEvaluatorService,
+        protected DisplayFeedbackService $displayFeedbackService
     ) {
 
         parent::__construct();
-
-        $this->questionCollectorService = new QuestionCollectorService(new ChatGPT());
+        $aiModel = new ChatGPT();
+        $this->questionCollectorService = new QuestionCollectorService($aiModel);
+        $this->feedbackCollectorService = new FeedbackCollectorService($aiModel);
     }
 
     /**
@@ -44,17 +52,13 @@ class GiveAssessment extends Command
         alert("Your Topic: {$this->topic}, Difficulty: {$this->difficultyLevel}, Total Question: {$this->numberOfQuestions}.");
 
         $questions = spin(fn () => $this->fetchQuestions(), 'Fetching Questions...');
-
+        // TODO: remove marks
         [$userChoices, $marks] = $this->examEvaluatorService->evaluate($questions);
         outro("Your marks: {$marks}");
 
-        $feedback = spin(fn () => $this->generateFeedback($userChoices), 'Generating Feedback...');
+        $feedback = spin(fn () => $this->generateFeedback($questions, $userChoices), 'Generating Feedback...');
 
-        /* TODO:
-            2) Send Result to AI and get Feedback
-            4) Display short feedback
-        */
-        info($feedback);
+        $this->displayFeedbackService->display($feedback);
     }
 
     private function fetchQuestions(): array
@@ -66,9 +70,9 @@ class GiveAssessment extends Command
             ->collectQuestions();
     }
 
-    private function generateFeedback(array $userChoices)
+    private function generateFeedback(array $questions, array $userChoices)
     {
-        sleep(2);
-        return "Here is your feedback";
+        return $this->feedbackCollectorService
+            ->getFeedback($questions, $userChoices);
     }
 }
