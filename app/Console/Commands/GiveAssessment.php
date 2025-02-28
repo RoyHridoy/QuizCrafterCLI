@@ -16,7 +16,7 @@ use function Laravel\Prompts\spin;
 
 class GiveAssessment extends Command
 {
-    protected $signature = 'app:assessment';
+    protected $signature = 'quiz:start';
 
     protected $description = 'Generate Questions for assessments on specific topic';
 
@@ -37,7 +37,7 @@ class GiveAssessment extends Command
     ) {
 
         parent::__construct();
-        $aiModel = new ChatGPT;
+        $aiModel = new ChatGPT();
         $this->questionCollectorService = new QuestionCollectorService($aiModel);
         $this->feedbackCollectorService = new FeedbackCollectorService($aiModel);
     }
