@@ -5,8 +5,6 @@ namespace App\Services\Assessment;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
 use function Laravel\Prompts\outro;
-use function Laravel\Prompts\table;
-use function Laravel\Prompts\warning;
 
 class DisplayFeedbackService
 {

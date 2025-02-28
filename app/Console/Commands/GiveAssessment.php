@@ -37,7 +37,7 @@ class GiveAssessment extends Command
     ) {
 
         parent::__construct();
-        $aiModel = new ChatGPT();
+        $aiModel = new ChatGPT;
         $this->questionCollectorService = new QuestionCollectorService($aiModel);
         $this->feedbackCollectorService = new FeedbackCollectorService($aiModel);
     }
@@ -58,6 +58,7 @@ class GiveAssessment extends Command
 
         $questionWithUserAnswer = collect($questions)->map(function ($question, $index) use ($userChoices) {
             $question['user_answer'] = $userChoices[$index];
+
             return $question;
         })->toArray();
 

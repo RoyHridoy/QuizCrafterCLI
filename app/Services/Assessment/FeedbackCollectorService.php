@@ -3,25 +3,25 @@
 namespace App\Services\Assessment;
 
 use App\AI\Contract\AiModel;
+use App\Services\Assessment\Traits\Parse;
 
 class FeedbackCollectorService
 {
-    /**
-     * Create a new class instance.
-     */
+    use Parse;
+
     public function __construct(protected AiModel $aiModel)
     {
         //
     }
 
-    public function getFeedback(array $questionWithUserAnswer)
+    public function getFeedback(array $questionWithUserAnswer): ?array
     {
         $content = $this->aiModel->send($this->generateFeedback(json_encode($questionWithUserAnswer)));
 
         return $this->parseJson($content);
     }
 
-    private function generateFeedback(string $questionWithUserAnswer)
+    private function generateFeedback(string $questionWithUserAnswer): ?string
     {
         return "Evaluate the user's answers against the following questions, identify and explain only incorrect answers, Provide short explanations to help the user understand the correct answer and Maintain the original question order for clarity:
             Questions including user answer: {$questionWithUserAnswer}
@@ -39,14 +39,5 @@ class FeedbackCollectorService
                 ...
             ]
             }";
-    }
-
-    protected function parseJson(string $jsonContent): array
-    {
-        $start = strpos($jsonContent, '```json') + strlen('```json');
-        $end = strpos($jsonContent, '```', $start);
-        $jsonResponse = substr($jsonContent, $start, $end - $start);
-
-        return json_decode($jsonResponse, true) ?? [];
     }
 }

@@ -3,9 +3,12 @@
 namespace App\Services\Assessment;
 
 use App\AI\Contract\AiModel;
+use App\Services\Assessment\Traits\Parse;
 
 class QuestionCollectorService
 {
+    use Parse;
+
     protected string $difficultyLevel = 'beginner';
 
     protected string $topic = 'laravel';
@@ -60,14 +63,5 @@ class QuestionCollectorService
             ->send($this->generateQuestions());
 
         return $this->parseJson($content);
-    }
-
-    protected function parseJson(string $jsonContent): array
-    {
-        $start = strpos($jsonContent, '```json') + strlen('```json');
-        $end = strpos($jsonContent, '```', $start);
-        $jsonResponse = substr($jsonContent, $start, $end - $start);
-
-        return json_decode($jsonResponse, true) ?? [];
     }
 }
