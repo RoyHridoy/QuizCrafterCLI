@@ -52,11 +52,16 @@ class GiveAssessment extends Command
         alert("Your Topic: {$this->topic}, Difficulty: {$this->difficultyLevel}, Total Question: {$this->numberOfQuestions}.");
 
         $questions = spin(fn () => $this->fetchQuestions(), 'Fetching Questions...');
-        // TODO: remove marks
-        [$userChoices, $marks] = $this->examEvaluatorService->evaluate($questions);
-        outro("Your marks: {$marks}");
 
-        $feedback = spin(fn () => $this->generateFeedback($questions, $userChoices), 'Generating Feedback...');
+        [$userChoices, $marks, $numberInPercent] = $this->examEvaluatorService->evaluate($questions);
+        outro("Your marks: {$marks} ({$numberInPercent}%)");
+
+        $questionWithUserAnswer = collect($questions)->map(function ($question, $index) use ($userChoices) {
+            $question['user_answer'] = $userChoices[$index];
+            return $question;
+        })->toArray();
+
+        $feedback = spin(fn () => $this->generateFeedback($questionWithUserAnswer), 'Generating Feedback...');
 
         $this->displayFeedbackService->display($feedback);
     }
@@ -70,9 +75,9 @@ class GiveAssessment extends Command
             ->collectQuestions();
     }
 
-    private function generateFeedback(array $questions, array $userChoices)
+    private function generateFeedback(array $questionWithUserAnswer)
     {
         return $this->feedbackCollectorService
-            ->getFeedback($questions, $userChoices);
+            ->getFeedback($questionWithUserAnswer);
     }
 }

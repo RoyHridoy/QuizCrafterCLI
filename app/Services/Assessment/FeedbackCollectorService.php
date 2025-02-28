@@ -14,24 +14,20 @@ class FeedbackCollectorService
         //
     }
 
-    public function getFeedback(array $questions, array $userChoices)
+    public function getFeedback(array $questionWithUserAnswer)
     {
-        $content = $this->aiModel->send($this->generateFeedback(json_encode($questions), json_encode($userChoices)));
+        $content = $this->aiModel->send($this->generateFeedback(json_encode($questionWithUserAnswer)));
 
         return $this->parseJson($content);
     }
 
-    private function generateFeedback(string $questionsInJson, string $answersInJson)
+    private function generateFeedback(string $questionWithUserAnswer)
     {
-        return "Evaluate the user's answers against the following questions:
-            Questions: {$questionsInJson}
-            User's Answers:  {$answersInJson}
+        return "Evaluate the user's answers against the following questions, identify and explain only incorrect answers, Provide short explanations to help the user understand the correct answer and Maintain the original question order for clarity:
+            Questions including user answer: {$questionWithUserAnswer}
             Output a JSON object:
             {
-            \"total_questions\": number,
-            \"correct_answers\": number,
-            \"incorrect_answers\": number,
-            \"overall_feedback\": string,
+            \"overall_feedback\": string format but not publish user marks,
             \"feedback\": [
                 {
                 \"index\": question_number,
@@ -42,13 +38,7 @@ class FeedbackCollectorService
                 },
                 ...
             ]
-            }
-
-            Instructions:
-            1. Identify and explain only incorrect answers.
-            2. Provide short explanations to help the user understand the correct answer.
-            3. Maintain the original question order for clarity.
-            ";
+            }";
     }
 
     protected function parseJson(string $jsonContent): array

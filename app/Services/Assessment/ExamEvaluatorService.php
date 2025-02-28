@@ -14,7 +14,6 @@ class ExamEvaluatorService
         $totalMarks = 0;
 
         foreach ($questions as $question) {
-            // dump($question);
             outro($question['question']);
             $userChoice = select(label: 'Choose Correct Option', options: [...$question['options']]);
 
@@ -25,15 +24,12 @@ class ExamEvaluatorService
             }
         }
 
+        $numberInPercent = number_format($totalMarks / count($questions) * 100, 2);
+
         return [
             $this->userChoices,
             $totalMarks,
+            $numberInPercent,
         ];
-    }
-
-    public function getFeedback()
-    {
-        dump($this->userChoices);
-        // $this->generateFeedback();
     }
 }

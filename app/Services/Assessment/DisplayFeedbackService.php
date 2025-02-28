@@ -20,8 +20,7 @@ class DisplayFeedbackService
 
     public function display(array $feedback)
     {
-        outro("marks in percentage: " . number_format($feedback['correct_answers'] / $feedback['total_questions'] * 100, 2) . "%");
-        info($feedback['overall_feedback']);
+        outro($feedback['overall_feedback']);
 
         foreach ($feedback['feedback'] as $_feedback) {
             outro("Question: # {$_feedback['index']}: {$_feedback['question']}");
