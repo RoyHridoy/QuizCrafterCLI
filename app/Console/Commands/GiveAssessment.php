@@ -37,7 +37,8 @@ class GiveAssessment extends Command
     ) {
 
         parent::__construct();
-        $aiModel = new ChatGPT();
+
+        $aiModel = new ChatGPT;
         $this->questionCollectorService = new QuestionCollectorService($aiModel);
         $this->feedbackCollectorService = new FeedbackCollectorService($aiModel);
     }
@@ -49,19 +50,23 @@ class GiveAssessment extends Command
     {
         [$this->topic, $this->difficultyLevel, $this->numberOfQuestions] = $this->inputCollectorService->getInputs();
 
+        // Fetching Questions
         alert("Your Topic: {$this->topic}, Difficulty: {$this->difficultyLevel}, Total Question: {$this->numberOfQuestions}.");
-
         $questions = spin(fn () => $this->fetchQuestions(), 'Fetching Questions...');
 
+        // Evaluate Exam
         [$userChoices, $marks, $numberInPercent] = $this->examEvaluatorService->evaluate($questions);
         outro("Your marks: {$marks} ({$numberInPercent}%)");
 
-        $questionWithUserAnswer = collect($questions)->map(function ($question, $index) use ($userChoices) {
-            $question['user_answer'] = $userChoices[$index];
+        // Prepare data for getting feedback
+        $questionWithUserAnswer = collect($questions)
+            ->map(function ($question, $index) use ($userChoices) {
+                $question['user_answer'] = $userChoices[$index];
 
-            return $question;
-        })->toArray();
+                return $question;
+            })->toArray();
 
+        // Get Feedbacks and show them
         $feedback = spin(fn () => $this->generateFeedback($questionWithUserAnswer), 'Generating Feedback...');
 
         $this->displayFeedbackService->display($feedback);

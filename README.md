@@ -31,21 +31,14 @@ composer install
 
 ```bash
 cp .env.example .env
-php artisan key:generate
 ```
 
 4. **Configure AI Service:**
 
-Ensure you have the required AI API credentials in your `.env` file:
+Ensure you have the required OPEN AI API credentials in your `.env` file:
 
 ```
 OPENAI_API_KEY=your-ai-api-key
-```
-
-5. **Run Migrations:**
-
-```bash
-php artisan migrate
 ```
 
 ## Usage
